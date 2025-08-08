@@ -66,6 +66,10 @@ class WindowInstance {
 
   createWindow = () => {
     this.instance = new WinBox({ ...this.options, root: document.querySelector('.container') });
+    // Apply entrance animation class
+    try {
+      this.instance.window.classList.add('wb-animated-in');
+    } catch {}
     this.#addToTaskbar();
   };
 
@@ -83,6 +87,7 @@ class WindowInstance {
 
     const _onclose = this.instance.onclose;
     this.instance.onclose = (force) => {
+      try { this.instance.window.classList.add('wb-animated-out'); } catch {}
       taskbarItem.classList.add('remove-item');
       if (_onclose) _onclose(force);
       setTimeout(() => {
@@ -94,10 +99,12 @@ class WindowInstance {
 
     this.instance.onfocus = () => {
       taskbarItem.classList.add('focus');
+      try { this.instance.window.classList.add('focus'); } catch {}
     };
 
     this.instance.onblur = () => {
       taskbarItem.classList.remove('focus');
+      try { this.instance.window.classList.remove('focus'); } catch {}
     };
 
     let open = true;
@@ -157,6 +164,8 @@ export class AppInstance extends WindowInstance {
           if (manifest.uses.includes('styling')) {
             loadCSS('/styles/style.css', iframe.contentDocument);
             loadCSS('/styles/window.css', iframe.contentDocument);
+            loadCSS('/styles/glassmorphism.css', iframe.contentDocument);
+            loadCSS('/styles/mobile.css', iframe.contentDocument);
           }
         };
       };

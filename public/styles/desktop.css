@@ -10,7 +10,8 @@
 	top: 50%;
 	left: 50%;
 	z-index: 1000;
-	transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%) translateZ(0);
+  will-change: opacity, transform;
 	background: var(--window-bg);
 	box-shadow: 0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22);
 	max-width: 600px;
@@ -36,13 +37,13 @@
 }
 
 .spotlight ul {
-	display: grid;
-  	grid-template-columns: 1fr 1fr 1fr;
-	flex-grow: 1;
-	overflow: scroll;
-	padding-left: 0;
-	gap: 10px;
-	padding: 2px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  flex-grow: 1;
+  overflow: scroll;
+  padding-left: 0;
+  gap: 10px;
+  padding: 2px;
 }
 
 .spotlight li {
@@ -67,6 +68,11 @@
 
 .spotlight li:hover {
 	outline: 2px solid var(--primary);
+}
+
+.spotlight li:focus-visible,
+.spotlight li[aria-selected="true"] {
+  outline: 2px solid var(--primary);
 }
 
 .boot {
@@ -206,10 +212,12 @@
 }
 
 .wb-header {
-	backdrop-filter: blur(var(--blur));
-	border-radius: 10px 10px 0 0;
-	background: var(--blur-bg);
-	transition: border-radius .3s;
+    backdrop-filter: blur(var(--blur));
+    -webkit-backdrop-filter: blur(var(--blur));
+    border-radius: 10px 10px 0 0;
+    background: var(--blur-bg);
+    transition: border-radius .3s, box-shadow .2s ease;
+    box-shadow: inset 0 -1px 0 rgba(255,255,255,.08);
 }
 
 .max {
@@ -223,10 +231,12 @@
 }
 
 .wb-body {
-	backdrop-filter: blur(var(--blur));
-	border-radius: 0 0 10px 10px;
-	background: var(--blur-bg);
-	transition: border-radius .3s;
+    backdrop-filter: blur(var(--blur));
+    -webkit-backdrop-filter: blur(var(--blur));
+    border-radius: 0 0 10px 10px;
+    background: var(--blur-bg);
+    transition: border-radius .3s, box-shadow .2s ease;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.04);
 }
 
 .winbox iframe {
@@ -249,6 +259,9 @@
 	margin: 10px;
 	margin-bottom: 12.5px;
 	gap: 10px;
+  /* 3D dock foundation */
+  perspective: 1000px;
+  transform-style: preserve-3d;
 }
 
 .taskbar > div {
@@ -257,6 +270,10 @@
 	border-radius: 5px;
 	background: var(--primary);
 	cursor: pointer;
+  /* Dock item 3D */
+  transform: translateZ(0);
+  transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  will-change: transform;
 }
 
 .taskbar-item {
@@ -271,6 +288,9 @@
 	overflow: hidden;
 	white-space: nowrap;
 	border-radius: 5px;
+  transform: translateZ(0);
+  transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  will-change: transform;
 }
 
 .taskbar-item.focus {
@@ -302,6 +322,14 @@
 	to {
 	  flex: 1;
 	}
+}
+
+/* Reduce motion for users who prefer it */
+@media (prefers-reduced-motion: reduce) {
+  .spotlight { transition: none; }
+  .progress-bar-value { animation: none; }
+  .winbox, .wb-header, .wb-body, .taskbar-item { transition: none !important; }
+  .taskbar-item.new-item, .taskbar-item.remove-item { animation: none !important; }
 }
 
 .btn {

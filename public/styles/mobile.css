@@ -1,0 +1,47 @@
+/* Mobile and Tablet responsive adjustments for FlowOS */
+
+:root {
+  --touch-target-min: 44px;
+}
+
+/* Spotlight on mobile takes more height, reduces blur for perf */
+@media (max-width: 768px) {
+  .spotlight {
+    width: calc(100vw - 24px);
+    height: calc(100vh - 24px);
+    max-width: none;
+    max-height: none;
+    padding: 16px;
+    backdrop-filter: blur(calc(var(--blur) * 0.6));
+  }
+
+  .spotlight ul {
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  }
+
+  .taskbar {
+    height: 56px;
+    gap: 8px;
+  }
+
+  .taskbar > div,
+  .taskbar .taskbar-item {
+    min-width: var(--touch-target-min);
+    min-height: var(--touch-target-min);
+  }
+
+  .wb-header { min-height: 40px; }
+}
+
+/* Tablet tweaks */
+@media (min-width: 768px) and (max-width: 1024px) {
+  .spotlight ul { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); }
+}
+
+/* Haptics-like pressed feedback */
+@media (hover: none) {
+  .taskbar > div:active,
+  .taskbar .taskbar-item:active {
+    transform: scale(0.96) translateZ(0);
+  }
+}

@@ -21,8 +21,10 @@
 
 		<title>FlowOS</title>
 
-		<link rel="stylesheet" href="/styles/style.css" />
-		<link rel="stylesheet" href="/styles/desktop.css" />
+    <link rel="stylesheet" href="/styles/style.css" />
+    <link rel="stylesheet" href="/styles/desktop.css" />
+    <link rel="stylesheet" href="/styles/glassmorphism.css" />
+    <link rel="stylesheet" href="/styles/mobile.css" />
 
 		<link rel="modulepreload" href="index.js" />
 		<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7124802500886435"
@@ -63,15 +65,25 @@
 			<div class="right"></div>
 		</div>
 
-		<div class="spotlight">
-			<input class="searchbar" placeholder="Search apps..." />
-			<ul class="apps"></ul>
-		</div>
+    <div class="spotlight" role="dialog" aria-modal="true" aria-labelledby="spotlight-title" aria-hidden="true">
+      <h2 id="spotlight-title" class="visually-hidden">App launcher</h2>
+      <input
+        class="searchbar"
+        placeholder="Search apps..."
+        aria-label="Search apps"
+        role="combobox"
+        aria-autocomplete="list"
+        aria-expanded="false"
+        aria-controls="spotlight-apps"
+        autocomplete="off"
+      />
+      <ul class="apps" id="spotlight-apps" role="listbox"></ul>
+    </div>
 
 		<div class="container"></div>
 
-		<div class="taskbar">
-			<div onclick="Flow.spotlight.toggle();" style="aspect-ratio: 1 / 1">
+    <div class="taskbar">
+      <div onclick="Flow.spotlight.toggle();" role="button" aria-controls="spotlight-apps" aria-expanded="false" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();Flow.spotlight.toggle();}" style="aspect-ratio: 1 / 1">
 				<div
 					style="
 						font-family: &quot;Agave Nerd Font&quot;;
@@ -100,6 +112,7 @@
 		<script src="baremux/index.js" defer></script>
 		<script src="epoxy/index.js" defer></script>
 		<script src="https://cdn.jsdelivr.net/npm/browserfs@1.4.1/dist/browserfs.min.js"></script>
-		<script src="/index.js" type="module" defer></script>
+    <script src="/index.js" type="module" defer></script>
+    <script src="/scripts/animations.js" defer></script>
 	</body>
 </html>

@@ -1,0 +1,103 @@
+/*
+  Glassmorphism Core Styles for FlowOS
+  Progressive enhancement: Uses backdrop-filter with fallbacks.
+  Theme-aware via CSS custom properties; works with existing themes.
+*/
+
+:root {
+  /* Fallbacks if theme doesn't provide these */
+  --glass-bg-light: rgba(255, 255, 255, 0.08);
+  --glass-bg-dark: rgba(0, 0, 0, 0.35);
+  --glass-bg: var(--surface-bg, var(--glass-bg-dark));
+  --glass-border: rgba(255, 255, 255, 0.18);
+  --glass-shadow: 0 8px 30px rgba(0, 0, 0, 0.35);
+  --glass-blur: var(--blur, 20px);
+  --glass-saturation: 160%;
+  --glass-radius: 12px;
+  --glass-outline: var(--primary, rgba(255,255,255,0.35));
+}
+
+/* Utility base */
+.glassmorphism-base {
+  background: var(--glass-bg);
+  border-radius: var(--glass-radius);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
+  transition: transform .3s cubic-bezier(0.4, 0, 0.2, 1),
+              box-shadow .3s cubic-bezier(0.4, 0, 0.2, 1),
+              border-color .3s ease;
+}
+
+/* Backdrop blur with progressive enhancement */
+@supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .glassmorphism-base {
+    backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturation));
+    -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturation));
+  }
+}
+
+/* Spotlight, Taskbar, Windows adopt glassmorphism */
+.spotlight {
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
+}
+
+.taskbar {
+  border: 1px solid var(--glass-border);
+  box-shadow: 0 10px 30px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.06);
+}
+
+.winbox {
+  border: 1px solid var(--glass-border);
+  box-shadow: 0 20px 50px rgba(0,0,0,.5);
+}
+
+.wb-header, .wb-body, .winbox iframe {
+  background: var(--glass-bg);
+}
+
+/* Focus accent for windows */
+.winbox.focus {
+  border-color: var(--glass-outline);
+  box-shadow: 0 25px 60px rgba(0,0,0,.55), 0 0 0 1px var(--glass-outline) inset;
+}
+
+/* Hover accents on interactive items */
+.taskbar > div,
+.taskbar .taskbar-item {
+  transition: transform .18s cubic-bezier(0.2, 0.9, 0.2, 1.4),
+              box-shadow .18s ease;
+  will-change: transform;
+}
+
+.taskbar > div:hover,
+.taskbar .taskbar-item:hover {
+  box-shadow: 0 8px 24px rgba(0,0,0,.35);
+}
+
+/* Subtle borders for inputs */
+input, textarea, select, button, .btn {
+  border: 1px solid rgba(255,255,255,.08);
+}
+
+/* Window open/close animations */
+@keyframes wb-scale-in {
+  from { transform: scale(.96) translateZ(0); opacity: 0; }
+  to   { transform: scale(1) translateZ(0); opacity: 1; }
+}
+
+@keyframes wb-scale-out {
+  from { transform: scale(1) translateZ(0); opacity: 1; }
+  to   { transform: scale(.96) translateZ(0); opacity: 0; }
+}
+
+.winbox.wb-animated-in { animation: wb-scale-in .24s ease-out both; }
+.winbox.wb-animated-out { animation: wb-scale-out .18s ease-in both; }
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .winbox.wb-animated-in,
+  .winbox.wb-animated-out {
+    animation: none;
+  }
+}

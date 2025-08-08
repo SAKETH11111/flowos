@@ -9,3 +9,4 @@ src/emulator/data/minify/node_modules
 !.yarn/sdks
 !.yarn/versions
 *.zip
+plan/

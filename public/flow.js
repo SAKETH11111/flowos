@@ -51,6 +51,9 @@ export default class FlowInstance {
     }, 700);
 
     loadCSS(config.settings.get('theme').url);
+    // Progressive enhancement styles (glass + mobile)
+    try { loadCSS('/styles/glassmorphism.css'); } catch {}
+    try { loadCSS('/styles/mobile.css'); } catch {}
 
     if (!config.css.get()) config.css.set('');
     if (!config.apps.get()) config.apps.set([]);
@@ -98,27 +101,48 @@ export default class FlowInstance {
      * @returns {boolean}
      */
     toggle: async () => {
+      const spotlightEl = document.querySelector('.spotlight');
+      const searchInput = document.querySelector('.spotlight .searchbar');
+      const taskbarToggle = document.querySelector('.taskbar > div[role="button"]');
+
       switch (this.spotlight.state) {
-        case true:
-          document.querySelector('.spotlight').style.opacity = 1;
-          document.querySelector('.spotlight').style.opacity = 0;
+        case true: {
+          spotlightEl.style.opacity = 1;
+          spotlightEl.style.opacity = 0;
           await sleep(200);
-          document.querySelector('.spotlight').style.display = 'none';
+          spotlightEl.style.display = 'none';
+          spotlightEl.setAttribute('aria-hidden', 'true');
+          if (searchInput) searchInput.setAttribute('aria-expanded', 'false');
+          if (taskbarToggle) taskbarToggle.setAttribute('aria-expanded', 'false');
+          if (this.spotlight.lastFocus && typeof this.spotlight.lastFocus.focus === 'function') {
+            this.spotlight.lastFocus.focus();
+          }
           this.spotlight.state = false;
           break;
-        case false:
-          document.querySelector('.spotlight').style.opacity = 0;
-          document.querySelector('.spotlight').style.display = 'flex';
+        }
+        case false: {
+          this.spotlight.lastFocus = document.activeElement;
+          spotlightEl.style.opacity = 0;
+          spotlightEl.style.display = 'flex';
           await sleep(200);
-          document.querySelector('.spotlight').style.opacity = 1;
+          spotlightEl.style.opacity = 1;
+          spotlightEl.setAttribute('aria-hidden', 'false');
+          if (taskbarToggle) taskbarToggle.setAttribute('aria-expanded', 'true');
+          if (searchInput) {
+            searchInput.setAttribute('aria-expanded', 'true');
+            searchInput.focus({ preventScroll: true });
+            try { searchInput.select(); } catch {}
+          }
           this.spotlight.state = true;
           break;
+        }
       }
 
       return this.spotlight.state;
     },
 
-    state: false
+    state: false,
+    lastFocus: null
   };
 
   settings = {
@@ -188,15 +212,27 @@ export default class FlowInstance {
      */
     register: () => {
       document.querySelector('.spotlight .apps').innerHTML = '';
+      let index = 0;
       for (const [APP_ID, value] of Object.entries(apps())) {
         const appListItem = document.createElement('li');
-        appListItem.innerHTML = `<img src="${value.icon}" width="25px"/><p>${value.title}</p>`;
+        appListItem.setAttribute('role', 'option');
+        appListItem.setAttribute('tabindex', '-1');
+        appListItem.setAttribute('aria-selected', 'false');
+        appListItem.id = `app-option-${String(APP_ID).replace(/\s+/g, '-').toLowerCase()}`;
+        appListItem.innerHTML = `<img src="${value.icon}" width="25px" alt=""/><p>${value.title}</p>`;
         appListItem.onclick = () => {
           this.wm.open(APP_ID);
           this.spotlight.toggle();
         };
+        appListItem.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            appListItem.click();
+          }
+        });
 
         this.spotlight.add(appListItem);
+        index += 1;
       }
     }
   };
